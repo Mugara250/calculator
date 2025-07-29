@@ -6,10 +6,18 @@ function App() {
   const [display, setDisplay] = useState(numbers);
   const [on, setOn] = useState(false);
   const [operation, setOperation] = useState("");
+  const [operand1, setOperand1] = useState(0);
+  const [operand2, setOperand2] = useState(0);
+  const [result, setResult] = useState(0);
   function onDisplay(event: React.MouseEvent) {
     const currentTarget = event.target as HTMLButtonElement;
     setOn(true);
-    setDisplay([...display, Number(currentTarget.id)]);
+    if (operand1) {
+      setDisplay([...display, Number(currentTarget.id)]);
+      setOperand2(+display.join(""));
+    } else {
+      setDisplay([...display, Number(currentTarget.id)]);
+    }
   }
   function onReset() {
     setOn(false);
@@ -17,10 +25,22 @@ function App() {
   }
   function onOperation(event: React.MouseEvent) {
     const currentTarget = event.target as HTMLButtonElement;
-    let button = currentTarget.id;
-    setOperation(button);
+    // let button = currentTarget.id;
+    setOperation(currentTarget.id);
+    onReset();
+    setOperand1(+display.join(""));
   }
-  console.log(operation);
+  function onEqual(event: React.MouseEvent) {
+    // const currentTarget = event.target as HTMLButtonElement;
+    switch (operation) {
+      case "-":
+        // setDisplay(numbers);
+        setResult(operand1 - operand2);
+        // setDisplay(result.toString().split("").map(char => +char));
+        break;
+    }
+  }
+  console.log(result);
   return (
     <div className="w-4/5 mx-auto">
       <h1 className="text-2xl font-bold text-center mt-4">
@@ -180,7 +200,7 @@ function App() {
           <Button
             id="="
             className="text-white w-[25%] py-8 border-r-[1px]  border-b-[1px] border-gray-400 bg-orange-400 cursor-pointer"
-            onDisplay={onOperation}
+            onDisplay={onEqual}
           >
             =
           </Button>
