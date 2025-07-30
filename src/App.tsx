@@ -2,21 +2,26 @@ import { useState, type ReactNode } from "react";
 
 type Symbols = "+/-" | "/" | "*" | "-" | "+" | "%";
 function App() {
-  const numbers: number[] = [];
+  const numbers: string[] = [];
   const [display, setDisplay] = useState(numbers);
   const [on, setOn] = useState(false);
   const [operation, setOperation] = useState("");
-  const [operand1, setOperand1] = useState(0);
-  const [operand2, setOperand2] = useState(0);
+  const [operand1, setOperand1] = useState(numbers);
+  const [operand2, setOperand2] = useState(numbers);
   const [result, setResult] = useState(0);
   function onDisplay(event: React.MouseEvent) {
     const currentTarget = event.target as HTMLButtonElement;
     setOn(true);
-    if (operand1) {
-      setDisplay([...display, Number(currentTarget.id)]);
-      setOperand2(+display.join(""));
+    if (result === 0) {
+      if (operation !== "") {
+        setDisplay([...display, currentTarget.id]);
+        setOperand2([...display, currentTarget.id]);
+      } else {
+        setDisplay([...display, currentTarget.id]);
+        setOperand1([...display, currentTarget.id]);
+      }
     } else {
-      setDisplay([...display, Number(currentTarget.id)]);
+      setResult(0);
     }
   }
   function onReset() {
@@ -28,15 +33,24 @@ function App() {
     // let button = currentTarget.id;
     setOperation(currentTarget.id);
     onReset();
-    setOperand1(+display.join(""));
   }
-  function onEqual(event: React.MouseEvent) {
-    // const currentTarget = event.target as HTMLButtonElement;
+  function onEqual() {
     switch (operation) {
+      case "+":
+        setResult(+operand1.join("") + +operand2.join(""));
+        setDisplay(String(+operand1.join("") + +operand2.join("")).split(""));
+        break;
       case "-":
-        // setDisplay(numbers);
-        setResult(operand1 - operand2);
-        // setDisplay(result.toString().split("").map(char => +char));
+        setResult(+operand1.join("") - +operand2.join(""));
+        setDisplay(String(+operand1.join("") - +operand2.join("")).split(""));
+        break;
+      case "*":
+        setResult(+operand1.join("") * +operand2.join(""));
+        setDisplay(String(+operand1.join("") * +operand2.join("")).split(""));
+        break;
+      case "/":
+        setResult(+operand1.join("") / +operand2.join(""));
+        setDisplay(String(+operand1.join("") / +operand2.join("")).split(""));
         break;
     }
   }
