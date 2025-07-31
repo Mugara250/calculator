@@ -1,67 +1,132 @@
 import { useState, type ReactNode } from "react";
 
 type Symbols = "+/-" | "/" | "*" | "-" | "+" | "%";
+interface State {
+  display: string[];
+  operation: string;
+  operand1: string[];
+  operand2: string[];
+  result: number[];
+  presentResult: boolean;
+}
+
 function App() {
-  const numbers: string[] = [];
-  const [display, setDisplay] = useState(numbers);
-  const [on, setOn] = useState(false);
-  const [operation, setOperation] = useState("");
-  const [operand1, setOperand1] = useState(numbers);
-  const [operand2, setOperand2] = useState(numbers);
-  const [result, setResult] = useState(0);
+  // const numbers: string[] = [];
+  const initialState: State = {
+    display: [],
+    operation: "",
+    operand1: [],
+    operand2: [],
+    result: [],
+    presentResult: false,
+  };
+  // const [display, setDisplay] = useState(numbers);
+  // const [on, setOn] = useState(false);
+  // const [operation, setOperation] = useState("");
+  // const [operand1, setOperand1] = useState(numbers);
+  // const [operand2, setOperand2] = useState(numbers);
+  // const [result, setResult] = useState(0);
+  const [state, setState] = useState(initialState);
   function onDisplay(event: React.MouseEvent) {
     const currentTarget = event.target as HTMLButtonElement;
-    setOn(true);
-    if (result === 0) {
-      if (operation !== "") {
-        setDisplay([...display, currentTarget.id]);
-        setOperand2([...display, currentTarget.id]);
-      } else {
-        setDisplay([...display, currentTarget.id]);
-        setOperand1([...display, currentTarget.id]);
-      }
+    if (state.operation === "") {
+      if (!state.presentResult)
+        setState({
+          ...state,
+          display: [...state.display, currentTarget.id],
+          operand1: [...state.operand1, currentTarget.id],
+        });
     } else {
-      setResult(0);
+      if (!state.presentResult)
+        setState({
+          ...state,
+          display: [...state.display, currentTarget.id],
+          operand2: [...state.operand2, currentTarget.id],
+        });
     }
   }
   function onReset() {
-    setOn(false);
-    setDisplay(numbers);
+    setState({ ...state, display: [], operation: "", presentResult: false });
   }
   function onOperation(event: React.MouseEvent) {
     const currentTarget = event.target as HTMLButtonElement;
     // let button = currentTarget.id;
-    setOperation(currentTarget.id);
-    onReset();
+    setState({ ...state, display: [], operation: currentTarget.id });
   }
+  console.log(state);
   function onEqual() {
-    switch (operation) {
+    switch (state.operation) {
       case "+":
-        setResult(+operand1.join("") + +operand2.join(""));
-        setDisplay(String(+operand1.join("") + +operand2.join("")).split(""));
+        setState({
+          ...state,
+          result: [
+            ...state.result,
+            +state.operand1.join("") + +state.operand2.join(""),
+          ],
+          display: String(
+            +state.operand1.join("") + +state.operand2.join("")
+          ).split(""),
+          operand1: [],
+          operand2: [],
+          presentResult: true,
+        });
+        onReset();
         break;
       case "-":
-        setResult(+operand1.join("") - +operand2.join(""));
-        setDisplay(String(+operand1.join("") - +operand2.join("")).split(""));
+        setState({
+          ...state,
+          result: [
+            ...state.result,
+            +state.operand1.join("") - +state.operand2.join(""),
+          ],
+          display: String(
+            +state.operand1.join("") - +state.operand2.join("")
+          ).split(""),
+          operand1: [],
+          operand2: [],
+          presentResult: true,
+        });
         break;
       case "*":
-        setResult(+operand1.join("") * +operand2.join(""));
-        setDisplay(String(+operand1.join("") * +operand2.join("")).split(""));
+        setState({
+          ...state,
+          result: [
+            ...state.result,
+            +state.operand1.join("") * +state.operand2.join(""),
+          ],
+          display: String(
+            +state.operand1.join("") * +state.operand2.join("")
+          ).split(""),
+          operand1: [],
+          operand2: [],
+          presentResult: true,
+        });
         break;
       case "/":
-        setResult(+operand1.join("") / +operand2.join(""));
-        setDisplay(String(+operand1.join("") / +operand2.join("")).split(""));
+        setState({
+          ...state,
+          result: [
+            ...state.result,
+            +state.operand1.join("") / +state.operand2.join(""),
+          ],
+          display: String(
+            +state.operand1.join("") / +state.operand2.join("")
+          ).split(""),
+          operand1: [],
+          operand2: [],
+          presentResult: true,
+        });
         break;
     }
   }
-  console.log(result);
+  console.log(state.result);
   return (
     <div className="w-4/5 mx-auto">
       <h1 className="text-2xl font-bold text-center mt-4">
         Calculator Application
       </h1>
       <div className=" border-[1px] border-black text-3xl w-[35%] mx-auto mt-5">
-        {on === false ? (
+        {state.display.length === 0 ? (
           <div
             id="display"
             className="bg-gray-400 text-white flex justify-end py-2 text-4xl"
@@ -73,7 +138,7 @@ function App() {
             id="display"
             className="bg-gray-400 text-white flex justify-end py-2 text-4xl"
           >
-            {...display}
+            {...state.display}
           </div>
         )}
         <div id="first-row">
