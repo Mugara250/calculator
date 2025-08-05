@@ -11,7 +11,7 @@ interface State {
 }
 
 function App() {
-  // const numbers: string[] = [];
+  // state object to keep track of the calculator's state
   const initialState: State = {
     display: [],
     operation: "",
@@ -20,13 +20,10 @@ function App() {
     result: [],
     presentResult: false,
   };
-  // const [display, setDisplay] = useState(numbers);
-  // const [on, setOn] = useState(false);
-  // const [operation, setOperation] = useState("");
-  // const [operand1, setOperand1] = useState(numbers);
-  // const [operand2, setOperand2] = useState(numbers);
-  // const [result, setResult] = useState(0);
+
   const [state, setState] = useState(initialState);
+
+  // Handler for the calculator display
   function onDisplay(event: React.MouseEvent) {
     const currentTarget = event.target as HTMLButtonElement;
     if (state.operation === "") {
@@ -45,15 +42,43 @@ function App() {
         });
     }
   }
+
+  // Handler for the AC button
   function onReset() {
     setState({ ...state, display: [], operation: "", presentResult: false });
   }
+
+  // Handler for any of the operations buttons
   function onOperation(event: React.MouseEvent) {
     const currentTarget = event.target as HTMLButtonElement;
-    // let button = currentTarget.id;
     setState({ ...state, display: [], operation: currentTarget.id });
   }
+  // Handler for the toggle sign button
+  function onToggleSign() {
+    if (state.operation === "") {
+      if (!state.presentResult && !state.display.includes("-")) {
+        state.display.unshift("-");
+        state.operand1.unshift("-");
+        setState({
+          ...state,
+          display: [...state.display],
+          operand1: [...state.operand1],
+        });
+      }
+    } else {
+      if (!state.presentResult && !state.display.includes("-")) {
+        state.display.unshift("-");
+        state.operand2.unshift("-");
+        setState({
+          ...state,
+          display: [...state.display],
+          operand2: [...state.operand2],
+        });
+      }
+    }
+  }
   console.log(state);
+  // Hanler for the equal button
   function onEqual() {
     switch (state.operation) {
       case "+":
@@ -119,7 +144,7 @@ function App() {
         break;
     }
   }
-  console.log(state.result);
+
   return (
     <div className="w-4/5 mx-auto">
       <h1 className="text-2xl font-bold text-center mt-4">
@@ -129,14 +154,14 @@ function App() {
         {state.display.length === 0 ? (
           <div
             id="display"
-            className="bg-gray-400 text-white flex justify-end py-2 text-4xl"
+            className="bg-gray-400 text-white flex justify-end py-2 text-[3rem]"
           >
             {0}
           </div>
         ) : (
           <div
             id="display"
-            className="bg-gray-400 text-white flex justify-end py-2 text-4xl"
+            className="bg-gray-400 text-white flex justify-end py-2 text-[3rem]"
           >
             {...state.display}
           </div>
@@ -152,7 +177,7 @@ function App() {
           <Button
             id="+/-"
             className="w-[25%] py-8 border-r-[1px]  border-b-[1px] border-gray-400 cursor-pointer"
-            onDisplay={onOperation}
+            onDisplay={onToggleSign}
           >
             +/-
           </Button>
@@ -261,7 +286,7 @@ function App() {
             +
           </Button>
         </div>
-        <div id="fourth-row">
+        <div id="fifth-row">
           <Button
             id="0"
             className="w-[50%] py-8 border-r-[1px]  border-b-[1px] border-gray-400 cursor-pointer"
