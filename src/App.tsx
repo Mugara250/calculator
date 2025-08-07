@@ -2,12 +2,8 @@ import { useState, type ReactNode } from "react";
 
 type Symbols = "+/-" | "/" | "*" | "-" | "+" | "%";
 interface State {
-  digits: string[];
   display: string;
-  // on: boolean;
   operation: string;
-  // operand1: string[];
-  // operand2: string[];
   operand1: string;
   operand2: string;
   result: number[];
@@ -17,13 +13,9 @@ interface State {
 function App() {
   // state object to keep track of the calculator's state
   const initialState: State = {
-    digits: [],
     display: "",
     operation: "",
-    // on: false,
-    // operand1: [],
     operand1: "",
-    // operand2: [],
     operand2: "",
     result: [],
     presentResult: false,
@@ -39,13 +31,13 @@ function App() {
         setState({
           ...state,
           display: [...state.display.split(""), currentTarget.id].join(""),
-          operand1: [...state.operand1.split(""), currentTarget.id].join("")
+          operand1: [...state.operand1.split(""), currentTarget.id].join(""),
         });
     } else {
       if (!state.presentResult)
         setState({
           ...state,
-          display: [...state.display.split(""), currentTarget.id].join(""),
+          display: [...state.operand2.split(""), currentTarget.id].join(""),
           operand2: [...state.operand2.split(""), currentTarget.id].join(""),
         });
     }
@@ -53,34 +45,39 @@ function App() {
 
   // Handler for the AC button
   function onReset() {
-    setState({ ...state, display: "", operation: "", presentResult: false });
+    setState({
+      ...state,
+      display: "",
+      operation: "",
+      presentResult: false,
+    });
   }
 
   // Handler for any of the operations buttons
   function onOperation(event: React.MouseEvent) {
     const currentTarget = event.target as HTMLButtonElement;
-    setState({ ...state, display: "", operation: currentTarget.id });
+    setState({
+      ...state,
+      display: state.display,
+      operation: currentTarget.id,
+    });
   }
   // Handler for the toggle sign button
   function onToggleSign() {
     if (state.operation === "") {
       if (!state.presentResult && !state.display.includes("-")) {
-        // state.display.split("").unshift("-");
-        // state.operand1.unshift("-");
         setState({
           ...state,
-          display: ["-",...state.display].join(""),
-          operand1: ["-",...state.operand1].join(""),
+          display: ["-", ...state.display].join(""),
+          operand1: ["-", ...state.operand1].join(""),
         });
       }
     } else {
       if (!state.presentResult && !state.display.includes("-")) {
-        // state.display.unshift("-");
-        // state.operand2.unshift("-");
         setState({
           ...state,
-          display: ["-",...state.display].join(""),
-          operand2: ["-",...state.operand2].join(""),
+          display: ["-", ...state.display].join(""),
+          operand2: ["-", ...state.operand2].join(""),
         });
       }
     }
@@ -93,7 +90,7 @@ function App() {
         setState({
           ...state,
           display: String(+state.display / 100),
-          operand1: String(+state.operand1 / 100)
+          operand1: String(+state.operand1 / 100),
         });
     } else {
       if (!state.presentResult)
@@ -111,13 +108,8 @@ function App() {
       case "+":
         setState({
           ...state,
-          result: [
-            ...state.result,
-            +state.operand1 + +state.operand2,
-          ],
-          display: String(
-            +state.operand1 + +state.operand2
-          ),
+          result: [...state.result, +state.operand1 + +state.operand2],
+          display: String(+state.operand1 + +state.operand2),
           operand1: "",
           operand2: "",
           presentResult: true,
@@ -126,13 +118,8 @@ function App() {
       case "-":
         setState({
           ...state,
-          result: [
-            ...state.result,
-            +state.operand1 - +state.operand2,
-          ],
-          display: String(
-            +state.operand1 - +state.operand2
-          ),
+          result: [...state.result, +state.operand1 - +state.operand2],
+          display: String(+state.operand1 - +state.operand2),
           operand1: "",
           operand2: "",
           presentResult: true,
@@ -141,13 +128,8 @@ function App() {
       case "*":
         setState({
           ...state,
-          result: [
-            ...state.result,
-            +state.operand1 * +state.operand2,
-          ],
-          display: String(
-            +state.operand1 * +state.operand2
-          ),
+          result: [...state.result, +state.operand1 * +state.operand2],
+          display: String(+state.operand1 * +state.operand2),
           operand1: "",
           operand2: "",
           presentResult: true,
@@ -156,13 +138,8 @@ function App() {
       case "/":
         setState({
           ...state,
-          result: [
-            ...state.result,
-            +state.operand1 / +state.operand2,
-          ],
-          display: String(
-            +state.operand1 / +state.operand2
-          ),
+          result: [...state.result, +state.operand1 / +state.operand2],
+          display: String(+state.operand1 / +state.operand2),
           operand1: "",
           operand2: "",
           presentResult: true,
@@ -176,7 +153,7 @@ function App() {
       <h1 className="text-2xl font-bold text-center mt-4">
         Calculator Application
       </h1>
-      <div className=" border-[1px] border-black text-3xl w-[35%] mx-auto mt-5">
+      <div className=" border-[1px] border-black text-3xl w-[45%] mx-auto mt-5">
         {state.display === "" ? (
           <div
             id="display"
