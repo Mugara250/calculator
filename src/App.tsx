@@ -2,10 +2,14 @@ import { useState, type ReactNode } from "react";
 
 type Symbols = "+/-" | "/" | "*" | "-" | "+" | "%";
 interface State {
-  display: string[];
+  digits: string[];
+  display: string;
+  // on: boolean;
   operation: string;
-  operand1: string[];
-  operand2: string[];
+  // operand1: string[];
+  // operand2: string[];
+  operand1: string;
+  operand2: string;
   result: number[];
   presentResult: boolean;
 }
@@ -13,10 +17,14 @@ interface State {
 function App() {
   // state object to keep track of the calculator's state
   const initialState: State = {
-    display: [],
+    digits: [],
+    display: "",
     operation: "",
-    operand1: [],
-    operand2: [],
+    // on: false,
+    // operand1: [],
+    operand1: "",
+    // operand2: [],
+    operand2: "",
     result: [],
     presentResult: false,
   };
@@ -30,55 +38,74 @@ function App() {
       if (!state.presentResult)
         setState({
           ...state,
-          display: [...state.display, currentTarget.id],
-          operand1: [...state.operand1, currentTarget.id],
+          display: [...state.display.split(""), currentTarget.id].join(""),
+          operand1: [...state.operand1.split(""), currentTarget.id].join("")
         });
     } else {
       if (!state.presentResult)
         setState({
           ...state,
-          display: [...state.display, currentTarget.id],
-          operand2: [...state.operand2, currentTarget.id],
+          display: [...state.display.split(""), currentTarget.id].join(""),
+          operand2: [...state.operand2.split(""), currentTarget.id].join(""),
         });
     }
   }
 
   // Handler for the AC button
   function onReset() {
-    setState({ ...state, display: [], operation: "", presentResult: false });
+    setState({ ...state, display: "", operation: "", presentResult: false });
   }
 
   // Handler for any of the operations buttons
   function onOperation(event: React.MouseEvent) {
     const currentTarget = event.target as HTMLButtonElement;
-    setState({ ...state, display: [], operation: currentTarget.id });
+    setState({ ...state, display: "", operation: currentTarget.id });
   }
   // Handler for the toggle sign button
   function onToggleSign() {
     if (state.operation === "") {
       if (!state.presentResult && !state.display.includes("-")) {
-        state.display.unshift("-");
-        state.operand1.unshift("-");
+        // state.display.split("").unshift("-");
+        // state.operand1.unshift("-");
         setState({
           ...state,
-          display: [...state.display],
-          operand1: [...state.operand1],
+          display: ["-",...state.display].join(""),
+          operand1: ["-",...state.operand1].join(""),
         });
       }
     } else {
       if (!state.presentResult && !state.display.includes("-")) {
-        state.display.unshift("-");
-        state.operand2.unshift("-");
+        // state.display.unshift("-");
+        // state.operand2.unshift("-");
         setState({
           ...state,
-          display: [...state.display],
-          operand2: [...state.operand2],
+          display: ["-",...state.display].join(""),
+          operand2: ["-",...state.operand2].join(""),
         });
       }
     }
   }
-  console.log(state);
+
+  // Handler for the percentage button
+  function onPercentage() {
+    if (state.operation === "") {
+      if (!state.presentResult)
+        setState({
+          ...state,
+          display: String(+state.display / 100),
+          operand1: String(+state.operand1 / 100)
+        });
+    } else {
+      if (!state.presentResult)
+        setState({
+          ...state,
+          display: String(+state.display / 100),
+          operand2: String(+state.operand2 / 100),
+        });
+    }
+  }
   // Hanler for the equal button
+  console.log(state);
   function onEqual() {
     switch (state.operation) {
       case "+":
@@ -86,29 +113,28 @@ function App() {
           ...state,
           result: [
             ...state.result,
-            +state.operand1.join("") + +state.operand2.join(""),
+            +state.operand1 + +state.operand2,
           ],
           display: String(
-            +state.operand1.join("") + +state.operand2.join("")
-          ).split(""),
-          operand1: [],
-          operand2: [],
+            +state.operand1 + +state.operand2
+          ),
+          operand1: "",
+          operand2: "",
           presentResult: true,
         });
-        onReset();
         break;
       case "-":
         setState({
           ...state,
           result: [
             ...state.result,
-            +state.operand1.join("") - +state.operand2.join(""),
+            +state.operand1 - +state.operand2,
           ],
           display: String(
-            +state.operand1.join("") - +state.operand2.join("")
-          ).split(""),
-          operand1: [],
-          operand2: [],
+            +state.operand1 - +state.operand2
+          ),
+          operand1: "",
+          operand2: "",
           presentResult: true,
         });
         break;
@@ -117,13 +143,13 @@ function App() {
           ...state,
           result: [
             ...state.result,
-            +state.operand1.join("") * +state.operand2.join(""),
+            +state.operand1 * +state.operand2,
           ],
           display: String(
-            +state.operand1.join("") * +state.operand2.join("")
-          ).split(""),
-          operand1: [],
-          operand2: [],
+            +state.operand1 * +state.operand2
+          ),
+          operand1: "",
+          operand2: "",
           presentResult: true,
         });
         break;
@@ -132,13 +158,13 @@ function App() {
           ...state,
           result: [
             ...state.result,
-            +state.operand1.join("") / +state.operand2.join(""),
+            +state.operand1 / +state.operand2,
           ],
           display: String(
-            +state.operand1.join("") / +state.operand2.join("")
-          ).split(""),
-          operand1: [],
-          operand2: [],
+            +state.operand1 / +state.operand2
+          ),
+          operand1: "",
+          operand2: "",
           presentResult: true,
         });
         break;
@@ -151,7 +177,7 @@ function App() {
         Calculator Application
       </h1>
       <div className=" border-[1px] border-black text-3xl w-[35%] mx-auto mt-5">
-        {state.display.length === 0 ? (
+        {state.display === "" ? (
           <div
             id="display"
             className="bg-gray-400 text-white flex justify-end py-2 text-[3rem]"
@@ -163,7 +189,7 @@ function App() {
             id="display"
             className="bg-gray-400 text-white flex justify-end py-2 text-[3rem]"
           >
-            {...state.display}
+            {state.display}
           </div>
         )}
         <div id="first-row">
@@ -184,7 +210,7 @@ function App() {
           <Button
             id="%"
             className="w-[25%] py-8 border-r-[1px]  border-b-[1px] border-gray-400 cursor-pointer"
-            onDisplay={onOperation}
+            onDisplay={onPercentage}
           >
             %
           </Button>
